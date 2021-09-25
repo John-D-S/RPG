@@ -24,14 +24,14 @@ namespace Menu
 
         private void OnValidate()
         {
-            slider.maxValue = 1;
-            slider.minValue = 0;
             
             if (!slider)
                 slider = GetComponent<Slider>();
             if (!sliderText)
                 sliderText = GetComponentInChildren<TextMeshProUGUI>();
-
+            
+            slider.maxValue = 1;
+            slider.minValue = 0;
             //set the text of the button to be the selected MenuSliderType text
             sliderText.text = sliderType.ToString().Replace("_", " ");
             //remove all the listeners of the slider because they will cause an error

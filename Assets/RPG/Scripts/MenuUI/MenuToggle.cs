@@ -69,9 +69,6 @@ namespace Menu
             //perform the appropriate function of the toggle according to the selected toggleType
             switch (toggleType)
             {
-                case MenuToggleType.Fullscreen:
-                    menuHandler.SetFullscreen(_value);
-                    break;
                 case MenuToggleType.Mute:
                     menuHandler.SetMute(_value);
                     break;

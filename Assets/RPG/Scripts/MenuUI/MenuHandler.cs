@@ -25,20 +25,13 @@ namespace Menu
         [SerializeField, Tooltip("The name of the Game Scene")]
         private string gameSceneName = "Main";
 
-        [Header("-- Resolution Settings --")]
-        [Tooltip("the resolution dropdown in the options menu")]
-        public TMP_Dropdown resolutionDropdown;
-        private Resolution[] resolutions;
-
         [Header("-- Audio --")]
         [Tooltip("The master audio mixer")]
         public AudioMixer masterMixer;
 
         [Header("-- Menu Objects --")]
-        [SerializeField, Tooltip("The options menu.")]
-        private GameObject OptionsMenu;
-        [SerializeField, Tooltip("The pause/main menu that is not the options menu")]
-        private GameObject HomeMenu;
+        [SerializeField, Tooltip("The pause/main menu")]
+        private GameObject MenuPanel;
 
         #region Pausing
         private bool paused = false;
@@ -56,8 +49,8 @@ namespace Menu
         public void Pause()
         {
             Time.timeScale = 0;
-            if (HomeMenu)
-                HomeMenu.SetActive(true);
+            if (MenuPanel)
+                MenuPanel.SetActive(true);
             paused = true;
         }
 
@@ -67,68 +60,13 @@ namespace Menu
         public void Unpause()
         {
             paused = false;
-            if (HomeMenu)
-                HomeMenu.SetActive(false);
+            if (MenuPanel)
+                MenuPanel.SetActive(false);
             Time.timeScale = 1;
         }
-
-        /// <summary>
-        /// if the options menu is open, go back to the menu, if not exit that menu
-        /// </summary>
-        public void MenuGoBack()
-        {
-            EventSystem.current.SetSelectedGameObject(null);
-            if (OptionsMenu.activeInHierarchy)
-                CloseOptionsMenu();
-            else
-            {
-                if (!paused)
-                    Pause();
-                else
-                    Unpause();
-            }
-        }
         #endregion
-
+        
         #region Options
-        /// <summary>
-        /// toggles the options menu being activeInHierarchy
-        /// </summary>
-        public void ToggleOptionsMenu()
-        {
-            if (HomeMenu.activeInHierarchy && !OptionsMenu.activeInHierarchy)
-            {
-                OpenOptionsMenu();
-            }
-            else if (!HomeMenu.activeInHierarchy && OptionsMenu.activeInHierarchy)
-            {
-                CloseOptionsMenu();
-            }
-        }
-
-        /// <summary>
-        /// sets the options menu as active and the home menu as inactive
-        /// </summary>
-        public void OpenOptionsMenu()
-        {
-            if (OptionsMenu && HomeMenu)
-            {
-                OptionsMenu.SetActive(true);
-                HomeMenu.SetActive(false);
-            }
-        }
-
-        /// <summary>
-        /// sets the options menu to be inactive and the home menu to be active
-        /// </summary>
-        public void CloseOptionsMenu()
-        {
-            if (OptionsMenu && HomeMenu)
-            {
-                OptionsMenu.SetActive(false);
-                HomeMenu.SetActive(true);
-            }
-        }
 
         #region Volume
         public void ChangeSFXVolume(float _volume)
@@ -165,22 +103,6 @@ namespace Menu
         }
         #endregion
 
-        #region Resolution
-        public void SetResolution(int ResolutionIndex)
-        {
-            Resolution res = resolutions[ResolutionIndex];
-            Screen.SetResolution(res.width, res.height, Screen.fullScreen);
-        }
-
-        public void SetFullscreen(bool isFullscreen)
-        {
-            Screen.fullScreen = isFullscreen;
-            PlayerPrefs.SetInt("IsFullscreen", isFullscreen ? 1 : 0);
-            PlayerPrefs.Save();
-        }
-
-        #endregion
-
         #endregion
 
         #region SceneSwitching
@@ -195,35 +117,7 @@ namespace Menu
         #endregion
 
         #region Initialization
-        /// <summary>
-        /// Sets all the options in the resolutions Dropdown and sets te function.
-        /// </summary>
-        private void InitializeResolutions()
-        {
-            // set the list of resolutions to all the possible resolutions
-            resolutions = Screen.resolutions;
-            // clear the options in the dropdown
-            resolutionDropdown.ClearOptions();
-            // initialise the resolution options as a new list of strings
-            List<string> resolutionOptions = new List<string>();
-            int currentResolutionIndex = 0;
-            for (int i = 0; i < resolutions.Length; i++)
-            {
-                string option = resolutions[i].width + "x" + resolutions[i].height;
-                resolutionOptions.Add(option);
-                if (resolutions[i].width == Screen.currentResolution.width && resolutions[i].height == Screen.currentResolution.height)
-                {
-                    currentResolutionIndex = i;
-                }
-            }
-            // add all the resolutions in the resolution Options list
-            resolutionDropdown.AddOptions(resolutionOptions);
-            //set the currently sellected resolution to the current resolution of the screen
-            resolutionDropdown.value = currentResolutionIndex;
-            //refresh the shown value so that it displays correctly
-            resolutionDropdown.RefreshShownValue();
-        }
-
+            
         /// <summary>
         /// initializes all the volume variables from playerprefs
         /// </summary>
@@ -276,8 +170,13 @@ namespace Menu
 
         private void Update()
         {
-            if (Input.GetButtonDown("Cancel"))
-                MenuGoBack();
+            if(SceneManager.GetActiveScene().name == gameSceneName && Input.GetAxis("Cancel") > 0.5f)
+            {
+                if(paused)
+                    Unpause();
+                else
+                    Pause();
+            }
         }
 
         private void Start()
@@ -287,7 +186,6 @@ namespace Menu
 
         private void Awake()
         {
-            InitializeResolutions();
             TheMenuHandler.theMenuHandler = this;
         }
     }

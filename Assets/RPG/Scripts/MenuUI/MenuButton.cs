@@ -7,10 +7,8 @@ namespace Menu
     public enum MenuButtonType
     {
         Start,
-        Return,
         Load_Game,
         Save_Game,
-        Options,
         Save_And_Quit,
         Quit
     }
@@ -81,17 +79,11 @@ namespace Menu
                 case MenuButtonType.Start:
                     menuHandler.StartGame();
                     break;
-                case MenuButtonType.Return:
-                    menuHandler.MenuGoBack();
-                    break;
                 case MenuButtonType.Load_Game:
                     menuHandler.Load();
                     break;
                 case MenuButtonType.Save_Game:
                     menuHandler.Save();
-                    break;
-                case MenuButtonType.Options:
-                    menuHandler.OpenOptionsMenu();
                     break;
                 case MenuButtonType.Save_And_Quit:
                     menuHandler.Save();
