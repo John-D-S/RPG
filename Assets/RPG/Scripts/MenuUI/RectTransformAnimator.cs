@@ -54,7 +54,7 @@ public class RectTransformAnimator : MonoBehaviour
         canvas = FindObjectOfType<Canvas>();
         if(StartOffScreen)
         {
-            Vector2 startOffSet = new Vector2(canvas.pixelRect.width, 0) * 2;
+            Vector2 startOffSet = new Vector2(canvas.pixelRect.width, 0) * 2.5f;
         #if UNITY_EDITOR
             EditorApplication.delayCall = () =>
             {
