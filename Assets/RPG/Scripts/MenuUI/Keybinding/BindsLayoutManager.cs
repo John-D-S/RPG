@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using System.Linq;
 
 namespace Keybinds
 {
@@ -15,20 +16,27 @@ namespace Keybinds
         // Start is called before the first frame update
         void Start()
         {
-            foreach(Binding binding in BindingManager.instance.defaultBindings)
+            ReloadButtons();
+        }
+
+        public void ReloadButtons()
+        {
+            // make sure that the buttons are not still spawned
+            if(buttonsToClear != null)
+            {
+                foreach(GameObject buttonObject in buttonsToClear)
+                {
+                    Destroy(buttonObject);
+                }
+                buttonsToClear.Clear();
+                buttonNames.Clear();
+            }
+            
+            foreach(Binding binding in BindingManager.instance.currentBindings)
             {
                 buttonNames.Add(binding.Name);
             }
 
-            // make sure that the buttons are not still spawned
-            if(buttonsToClear != null)
-            {
-                foreach(GameObject obj in buttonsToClear)
-                {
-                    buttonsToClear.Remove(obj);
-                    Destroy(obj);
-                }
-            }
             SpawnButton(bindButton);
         }
 
@@ -43,11 +51,11 @@ namespace Keybinds
             for(int i = 0; i < buttonNames.Count; i++)
             {
                 // spawns objects in a set position depending on if the object is odd or even in the list
-                Instantiate(_button, bindButtonHolder);
+                GameObject button = Instantiate(_button, bindButtonHolder);
                 // gets the buttons component and sets the name of the button
                 BindingButton _bindName = _button.GetComponent<BindingButton>();
                 _bindName.bindingToMap = buttonNames[i];
-                buttonsToClear.Add(_button);
+                buttonsToClear.Add(button);
             }
         }
     }

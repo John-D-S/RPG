@@ -1,5 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+
 using UnityEngine;
 
 namespace Keybinds
@@ -8,11 +11,23 @@ namespace Keybinds
     {
         public static BindingManager instance = null;
         private Dictionary<string, Binding> bindingsMap = new Dictionary<string, Binding>(); // creates a dictionary for mapping the binding
-        [SerializeField] public List<Binding> defaultBindings = new List<Binding>(); // creates a list of default bindings
+        [SerializeField] private BindsLayoutManager bindsLayoutManager;
+        [SerializeField] public List<Binding> currentBindings = new List<Binding>(); // creates a list of default bindings
+        private Dictionary<string, KeyCode> defaultBindings = new Dictionary<string, KeyCode>();
         private List<Binding> bindingsList = new List<Binding>(); // creates a list of bindings
 
         public List<Binding> GetBindings() => bindingsList;
 
+        private void LogBindingsList(List<Binding> _bindings)
+        {
+            string startBindingString = "";
+            foreach(Binding binding in _bindings)
+            {
+                startBindingString += $"{binding.Name}: {binding.Value} \n";
+            }
+            Debug.Log(startBindingString);
+        }
+        
         private void Awake()
         {
             // check for another instance of the binding manager 
@@ -28,9 +43,25 @@ namespace Keybinds
                 Destroy(gameObject);
                 return;
             }
-
             PopulateBindingDictionaries();
+            foreach(Binding binding in currentBindings)
+            {
+                defaultBindings[binding.Name] = binding.Value;
+            }
             LoadBindings();
+        }
+
+        public void ResetBindings()
+        {
+            foreach(KeyValuePair<string, KeyCode> bindingPair in defaultBindings)
+            {
+                Rebind(bindingPair.Key, bindingPair.Value);
+            }
+            LoadBindings();
+            if(bindsLayoutManager)
+            {
+                bindsLayoutManager.ReloadButtons();
+            }
         }
 
         /// <summary>
@@ -44,7 +75,7 @@ namespace Keybinds
             // if so skip that one
             // adds the bindings to the map and binding list
 
-            foreach(Binding binding in defaultBindings)
+            foreach(Binding binding in currentBindings)
             {
                 if (bindingsMap.ContainsKey(binding.Name))
                 {

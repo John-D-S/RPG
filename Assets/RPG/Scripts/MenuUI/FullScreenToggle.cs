@@ -17,7 +17,7 @@ public class FullScreenToggle : MonoBehaviour
         if (PlayerPrefs.HasKey("isFullScreen"))
             toggle.isOn = PlayerPrefs.GetInt("IsFullScreen") == 1;
         else
-            toggle.isOn = false;
+            toggle.isOn = Screen.fullScreen;
     }
 
     private void SetFullscreen(bool isFullscreen)
