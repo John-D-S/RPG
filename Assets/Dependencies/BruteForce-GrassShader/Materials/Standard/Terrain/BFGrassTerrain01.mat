@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: BFGrassTerrain01
   m_Shader: {fileID: 4800000, guid: 0108bd98254aa52449e692c4eb92def0, type: 3}
-  m_ShaderKeywords: USE_RT USE_SC _RTEFFECT_ON
+  m_ShaderKeywords: USE_RT _RTEFFECT_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -104,7 +104,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normal4:
-        m_Texture: {fileID: 2800000, guid: 4e1d764fa7e47f34eae88e37253c2542, type: 3}
+        m_Texture: {fileID: 2800000, guid: 3e914031f76a35041b416993ce702d56, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Normal5:
@@ -148,7 +148,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _Splat4:
-        m_Texture: {fileID: 2800000, guid: 9eb8f1ba60975784ea9768fee3955c08, type: 3}
+        m_Texture: {fileID: 2800000, guid: f5903ee43302fcd44879ae6f5dfed325, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 1}
     - _Splat5:
@@ -197,7 +197,7 @@ Material:
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _GrassCut: 0
+    - _GrassCut: 0.056
     - _GrassSaturation: 1.5
     - _GrassShading: 0.076
     - _GrassThinness: 0.45
@@ -216,7 +216,7 @@ Material:
     - _NoisePower: 1.24
     - _NumberOfStacks: 17
     - _OcclusionStrength: 1
-    - _OffsetValue: 6
+    - _OffsetValue: 10.2
     - _Parallax: 0.02
     - _PrioA: 1
     - _PrioB: 1
@@ -239,8 +239,8 @@ Material:
     - _UVSec: 0
     - _UseBiplanar: 0
     - _UseRT: 1
-    - _UseShadowCast: 1
-    - _WindForce: 0.3
+    - _UseShadowCast: 0
+    - _WindForce: 0.15
     - _WindMovement: 0.2
     - _ZWrite: 1
     - __NumberOfStacks: 17
@@ -257,13 +257,13 @@ Material:
     - _Specular1: {r: 1, g: 1, b: 1, a: 1}
     - _Specular2: {r: 1, g: 1, b: 1, a: 1}
     - _Specular3: {r: 1, g: 1, b: 1, a: 1}
-    - _Specular4: {r: 0.7083704, g: 0.745283, b: 0.6714578, a: 1}
+    - _Specular4: {r: 0, g: 0, b: 0, a: 0}
     - _Specular5: {r: 0.879, g: 0.879, b: 0.879, a: 1}
     - _Specular6: {r: 1, g: 0.7349295, b: 0.6367924, a: 1}
     - _Specular7: {r: 1, g: 0.7349295, b: 0.6367924, a: 1}
     - _Splat0_S: {r: 1, g: 1, b: 0, a: 1}
     - _Splat4_STA: {r: 1, g: 1, b: 1.5, a: 1}
-    - _Splat4_STn: {r: 1, g: 1, b: 1.5, a: 0.44}
+    - _Splat4_STn: {r: 0, g: 0, b: 5, a: 5}
     - _Splat5_STn: {r: 1, g: 1, b: 3.81, a: 1.06}
     - _Splat6_STn: {r: 1, g: 1, b: 1, a: 1.68}
     - _Splat7_STn: {r: 1, g: 1, b: 1, a: 1.68}
