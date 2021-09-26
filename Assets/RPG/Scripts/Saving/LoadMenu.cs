@@ -17,6 +17,11 @@ public class LoadMenu : MonoBehaviour
 
     private void Start()
     {
+        InitializeLevelButtons();
+    }
+
+    private void InitializeLevelButtons()
+    {
         SaveLoadSystem.theSaveLoadSystem.Load();
         int i = 0;
         foreach(GameSave gameDataGameSave in SaveLoadSystem.theSaveLoadSystem.gameData.gameSaves)
@@ -28,7 +33,15 @@ public class LoadMenu : MonoBehaviour
             i++;
         }
     }
-
+    
+    public void ClearAllSaves()
+    {
+        SaveLoadSystem.theSaveLoadSystem.ResetProgress();
+        foreach (Transform child in levelLoadPanel) {
+            Destroy(child.gameObject);
+        }
+    }
+    
     private void OnValidate()
     {
         if(!levelLoadButton.GetComponent<Button>())

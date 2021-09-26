@@ -95,6 +95,7 @@ namespace Saving
         {
             gameData = new GameData();
             Save();
+            Load();
         }
 
         private void Awake()
