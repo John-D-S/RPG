@@ -1,3 +1,5 @@
+using Saving;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -25,6 +27,15 @@ public class AppearanceManager : MonoBehaviour
     [SerializeField] private List<GameObject> shoes;
     public int NumberOfShoes => shoes.Count;
 
+    public void ApplyAppearenceData(AppearanceData _data)
+    {
+        ChangeAppearance(ApperancePart.Hair, _data.characterHair);
+        ChangeAppearance(ApperancePart.Head, _data.characterHead);
+        ChangeAppearance(ApperancePart.Clothes, _data.characterClothes);
+        ChangeAppearance(ApperancePart.Glove, _data.characterGloves);
+        ChangeAppearance(ApperancePart.Shoe, _data.characterShoes);
+    }
+    
     public void ChangeAppearance(ApperancePart _part, int index)
     {
         List<GameObject> objectList;

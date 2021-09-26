@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
@@ -17,11 +19,9 @@ namespace Saving
 
         private void Start()
         {
-            if (!Directory.Exists(Application.streamingAssetsPath))
-                Directory.CreateDirectory(Application.streamingAssetsPath);
-            if (!File.Exists(FilePath + ".save"))
-                Save();
             Load();
+            Save();
+            //Debug.Log(gameData.gameSaves);
         }
 
         public void Save()
@@ -63,10 +63,11 @@ namespace Saving
 
         void LoadBinary()
         {
-            // if if there is no save data, we shouldn't attempt to load it
+            if (!Directory.Exists(Application.streamingAssetsPath))
+                Directory.CreateDirectory(Application.streamingAssetsPath);
             if (!File.Exists(FilePath + ".save"))
-                return;
-
+                Save();
+            
             // this opens the 'river' between the ram and the file
             using (FileStream stream = new FileStream(FilePath + ".save", FileMode.Open))
             {
@@ -74,6 +75,11 @@ namespace Saving
                 BinaryFormatter formatter = new BinaryFormatter();
                 // transports the data from the specified file to the ram, like melting ice into water.
                 gameData = formatter.Deserialize(stream) as GameData;
+            }
+            
+            if(gameData.gameSaves == null)
+            {
+                gameData.gameSaves = new List<GameSave>();
             }
         }
 

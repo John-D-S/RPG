@@ -11,6 +11,7 @@ public class CharacterCustomizer : MonoBehaviour
     [Header("-- Name Input --")] 
     [SerializeField] private SaveLoadSystem saveLoadSystem;
     [SerializeField] private TMP_InputField nameInput;
+    public string CharacterName => nameInput.text;
     
     [Header("-- Skill Customisation --")]
     [SerializeField] private int startingPoints = 10;
@@ -45,6 +46,7 @@ public class CharacterCustomizer : MonoBehaviour
         shoeCycler.cycleValue = true;
         shoeCycler.maxExclusiveValue = appearanceManager.NumberOfShoes;
         UpdateAppearance();
+        UpdateSkills();
     }
 
     public void UpdateAppearance()
@@ -67,20 +69,23 @@ public class CharacterCustomizer : MonoBehaviour
 
     public void SaveNewCharacter()
     {
-        string name = nameInput.text;
-        SkillData newSkillData = new SkillData();
-        newSkillData.health = health.CurrentValue;
-        newSkillData.speed = speed.CurrentValue;
-        newSkillData.stamina = stamina.CurrentValue;
-        AppearanceData newAppearanceData = new AppearanceData();
-        newAppearanceData.characterHair = hairCycler.CurrentValue;
-        newAppearanceData.characterHead = headCycler.CurrentValue;
-        newAppearanceData.characterClothes = clothesCycler.CurrentValue;
-        newAppearanceData.characterGloves = gloveCycler.CurrentValue;
-        newAppearanceData.characterShoes = gloveCycler.CurrentValue;
-        ProgressData newProgressData = new ProgressData();
-        saveLoadSystem.Load();
-        saveLoadSystem.gameData.gameSaves.Add(new GameSave(name, newSkillData, newAppearanceData, newProgressData));
-        saveLoadSystem.Save();
+        if(CharacterName != string.Empty)
+        {
+            string name = CharacterName;
+            SkillData newSkillData = new SkillData();
+            newSkillData.health = health.CurrentValue;
+            newSkillData.speed = speed.CurrentValue;
+            newSkillData.stamina = stamina.CurrentValue;
+            AppearanceData newAppearanceData = new AppearanceData();
+            newAppearanceData.characterHair = hairCycler.CurrentValue;
+            newAppearanceData.characterHead = headCycler.CurrentValue;
+            newAppearanceData.characterClothes = clothesCycler.CurrentValue;
+            newAppearanceData.characterGloves = gloveCycler.CurrentValue;
+            newAppearanceData.characterShoes = gloveCycler.CurrentValue;
+            ProgressData newProgressData = new ProgressData();
+            saveLoadSystem.Load();
+            saveLoadSystem.gameData.gameSaves.Add(new GameSave(name, newSkillData, newAppearanceData, newProgressData));
+            saveLoadSystem.Save();
+        }
     }
 }

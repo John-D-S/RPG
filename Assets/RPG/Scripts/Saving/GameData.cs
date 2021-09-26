@@ -59,13 +59,7 @@ namespace Saving
     public class GameData
     {
         //these are where the high scores are stored
-        public List<GameSave> gameSaves;
-
-        //the class initializer sets highScores to a new list of highScores
-        public GameData()
-        {
-            gameSaves = new List<GameSave>();
-        }
+        public List<GameSave> gameSaves = new List<GameSave>();
         
         /// <summary>
         /// returns the index of gameSaves at which the name, "_name" appears;
