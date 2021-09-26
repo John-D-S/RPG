@@ -29,7 +29,7 @@ public class RectTransformAnimator : MonoBehaviour
 
     public void AnimateIn(bool _moveLeft)
     {
-        Vector2 startOffSet = new Vector2(_moveLeft ? - canvas.pixelRect.width : canvas.pixelRect.width, 0) * 2;
+        Vector2 startOffSet = new Vector2(_moveLeft ? - canvas.pixelRect.width : canvas.pixelRect.width, 0) * 2.5f;
         rectTransform.offsetMax = startOffSet;
         rectTransform.offsetMin = startOffSet;
         targetHorizontalOffset = 0;
@@ -39,7 +39,7 @@ public class RectTransformAnimator : MonoBehaviour
     {
         rectTransform.offsetMax = Vector2.zero;
         rectTransform.offsetMin = Vector2.zero;
-        targetHorizontalOffset = (_moveLeft ? canvas.pixelRect.width : - canvas.pixelRect.width) * 2;
+        targetHorizontalOffset = (_moveLeft ? canvas.pixelRect.width : - canvas.pixelRect.width) * 2.5f;
     }
 
     private void Update()
