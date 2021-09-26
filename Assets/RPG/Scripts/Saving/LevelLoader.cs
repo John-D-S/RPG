@@ -35,8 +35,11 @@ public class LevelLoader : MonoBehaviour
 	{
 		if(SceneManager.GetActiveScene().name == "Menu")
 		{
-			gameSaveToLoad = SaveLoadSystem.theSaveLoadSystem.gameData.gameSaves[_levelIndex];
-			SceneManager.LoadScene(1);
+			if(SaveLoadSystem.theSaveLoadSystem.gameData.gameSaves.Count > _levelIndex)
+			{
+				gameSaveToLoad = SaveLoadSystem.theSaveLoadSystem.gameData.gameSaves[_levelIndex];
+				SceneManager.LoadScene(1);
+			}
 		}
 	}
 

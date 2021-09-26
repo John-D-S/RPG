@@ -9,7 +9,7 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: PlaneExplanation01bis
   m_Shader: {fileID: 4800000, guid: 7cd5d6fe2c6238e469561875c01946f3, type: 3}
-  m_ShaderKeywords: 
+  m_ShaderKeywords: USE_PR
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -87,39 +87,48 @@ Material:
     - _FadeAmplitude: 28
     - _FadeDistance: 16
     - _FadeDistanceEnd: 26
-    - _FadeDistanceStart: 16
+    - _FadeDistanceStart: 21.94
     - _GlossMapScale: 1
     - _Glossiness: 0.5
     - _GlossyReflections: 1
     - _GrassCut: 0
-    - _GrassSaturation: 2
-    - _GrassShading: 0.16
-    - _GrassThinness: 0.69
-    - _GrassThinnessIntersection: 0.43
+    - _GrassSaturation: 1
+    - _GrassShading: 0.031
+    - _GrassThinness: 1.08
+    - _GrassThinnessIntersection: 1.32
+    - _LightIntensity: 1
     - _Metallic: 0
-    - _MinimumNumberStacks: 2
+    - _MinimumNumberStacks: 4
     - _Mode: 0
     - _NoisePower: 2
-    - _NumberOfStacks: 8
+    - _NumberOfStacks: 6
     - _OcclusionStrength: 1
-    - _OffsetValue: 3
+    - _OffsetValue: 5.25
     - _Parallax: 0.02
+    - _ProceduralDistance: 5.5
+    - _ProceduralStrength: 1.5
     - _RTEffect: 0
     - _RimMax: 0.62
     - _RimMin: 0.241
-    - _RimPower: 3.15
+    - _RimPower: 2.3
     - _ShadowFuziness: 1
     - _ShadowMax: 0
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _TilingN1: 4.24
-    - _TilingN2: 0.05
+    - _TilingN1: 13.47
+    - _TilingN2: 5.35
     - _TilingN3: 0.65
     - _UVSec: 0
+    - _UsePR: 1
     - _UseRT: 0
+    - _UseShadow: 1
+    - _UseShadowCast: 1
+    - _UseWC: 0
     - _WindForce: 0.22
     - _WindMovement: 0.2
+    - _WorldRotation: 0
+    - _WorldScale: 9.52
     - _ZWrite: 1
     - __NumberOfStacks: 17
     m_Colors:
@@ -131,3 +140,4 @@ Material:
     - _ProjectedShadowColor: {r: 0.4528302, g: 0.42296267, b: 0.044855822, a: 1}
     - _RimColor: {r: 0.14566667, g: 0.184, b: 0.09008333, a: 1}
     - _SelfShadowColor: {r: 0.3026154, g: 0.46226418, b: 0, a: 1}
+  m_BuildTextureStacks: []
