@@ -4,19 +4,51 @@ using UnityEngine;
 
 namespace Saving
 {
+    [System.Serializable]
+    public class SkillData
+    {
+        public int freeSkillPoints;
+        
+        public int health;
+        public int stamina;
+        public int speed;
+    }
+
+    [System.Serializable]
+    public class AppearanceData
+    {
+        public int characterHair;
+        public int characterHead;
+        public int characterClothes;
+        public int characterGloves;
+        public int characterShoes;
+    }
+
+    [System.Serializable]
+    public class ProgressData
+    {
+        public int currentCheckpoint;
+        public List<string> questsCompleted = new List<string>();
+    }
+    
     /// <summary>
-    /// contains a name and a score and thats it.
+    /// contains all the data needed to save and load levels;
     /// </summary>
     [System.Serializable]
-    public class NameScorePair
+    public class GameSave
     {
         public string name;
-        public int score;
 
-        public NameScorePair(string _name, int _score)
+        public SkillData skillData;
+        public AppearanceData appearanceData;
+        public ProgressData progressData;
+        
+        public GameSave(string _name, SkillData _skillData, AppearanceData _appearanceData, ProgressData _progressData)
         {
             name = _name;
-            score = _score;
+            skillData = _skillData;
+            appearanceData = _appearanceData;
+            progressData = _progressData;
         }
     }
 
@@ -27,87 +59,61 @@ namespace Saving
     public class GameData
     {
         //these are where the high scores are stored
-        public List<NameScorePair> highScores;
+        public List<GameSave> gameSaves;
 
         //the class initializer sets highScores to a new list of highScores
         public GameData()
         {
-            highScores = new List<NameScorePair>();
+            gameSaves = new List<GameSave>();
         }
-
+        
         /// <summary>
-        /// returns the index of highscores at which the name, "name" appears;
+        /// returns the index of gameSaves at which the name, "_name" appears;
         /// </summary>
-        public int IndexOfName(string name)
+        public int IndexOfName(string _name)
         {
-            for (int i = 0; i < highScores.Count; i++)
+            for (int i = 0; i < gameSaves.Count; i++)
             {
-                if (highScores[i].name == name)
+                if (gameSaves[i].name == _name)
                     return i;
             }
-            if (highScores.Count == 0)
-                return 1;
-            return highScores.Count;
+            return -1;
         }
 
-        /// <summary>
-        /// bubble sorts the highScores by each score
-        /// </summary>
-        void SortHighScores()
+        public GameSave GameSaveWithName(string _name)
         {
-            List<NameScorePair> highScoresCopy = highScores;
-            bool isSorted = false;
-            while (!isSorted)
+            foreach(GameSave gameSave in gameSaves)
             {
-                bool possiblySorted = true;
-                for (int j = 0; j < highScoresCopy.Count - 1; j++)
+                if(gameSave.name == _name)
                 {
-                    if (highScoresCopy[j].score < highScoresCopy[j + 1].score)
-                    {
-                        possiblySorted = false;
-                        NameScorePair higher = highScoresCopy[j];
-                        NameScorePair lower = highScoresCopy[j + 1];
-                        highScoresCopy[j] = lower;
-                        highScoresCopy[j + 1] = higher;
-                    }
+                    return gameSave;
                 }
-                isSorted = possiblySorted;
             }
-            highScores = highScoresCopy;
+            return null;
         }
 
-        /// <summary>
-        /// reduces the number of highscores down to 8 by removing the last members of the list.
-        /// </summary>
-        void TrimHighScores()
+        public bool RemoveGameSaveWithName(string _name)
         {
-            int maxHighScores = 8;
-            if (highScores.Count > maxHighScores)
-            {
-                for (int i = highScores.Count; i > maxHighScores; i--)
-                    highScores.RemoveAt(i - 1);
-            }
+            GameSave saveToRemove = GameSaveWithName(_name);
+            if(saveToRemove != null)
+                return gameSaves.Remove(saveToRemove);
+            return false;
         }
-
+        
         /// <summary>
-        /// Adds a highScore with name "name" and score "score" to the list of highscores and sorts it and trims it if the number of highscores excedes 8
+        /// Adds a GameSave with name "name" and score "score" to the list of highscores and sorts it and trims it if the number of highscores excedes 8
         /// </summary>
-        public void AddScore(string name, int score)
+        public void AddGameSave(GameSave _gameSave)
         {
-            int indexOfName = IndexOfName(name);
-            if (indexOfName < highScores.Count)
+            int indexOfName = IndexOfName(_gameSave.name);
+            if (indexOfName > 0)
             {
-                if (highScores[indexOfName].score < score)
-                {
-                    highScores[indexOfName] = new NameScorePair(name, score);
-                }
+                gameSaves.Add(_gameSave);
             }
             else
             {
-                highScores.Add(new NameScorePair(name, score));
+                gameSaves[indexOfName] = _gameSave;
             }
-            SortHighScores();
-            TrimHighScores();
         }
     }
 }
