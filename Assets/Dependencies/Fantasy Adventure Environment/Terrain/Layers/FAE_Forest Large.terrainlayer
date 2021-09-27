@@ -6,14 +6,14 @@ TerrainLayer:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: NewLayer03
-  m_DiffuseTexture: {fileID: 2800000, guid: ba86a4af9e5be094690b5afc214215bd, type: 3}
-  m_NormalMapTexture: {fileID: 2800000, guid: 4e1d764fa7e47f34eae88e37253c2542, type: 3}
-  m_MaskMapTexture: {fileID: 0}
-  m_TileSize: {x: 1.15, y: 0.68}
-  m_TileOffset: {x: 1, y: 1}
-  m_Specular: {r: 0.9056604, g: 0.8415743, b: 0.68778926, a: 1}
-  m_Metallic: 0.009
+  m_Name: FAE_Forest Large
+  m_DiffuseTexture: {fileID: 2800000, guid: 78b8432705ca9134f8d1a77f0c4db31b, type: 3}
+  m_NormalMapTexture: {fileID: 2800000, guid: a04fec741d779664db787889b5c9995e, type: 3}
+  m_MaskMapTexture: {fileID: 2800000, guid: 2186908e434ae8345ab202558a94e30f, type: 3}
+  m_TileSize: {x: 16, y: 16}
+  m_TileOffset: {x: 0, y: 0}
+  m_Specular: {r: 0, g: 0, b: 0, a: 0}
+  m_Metallic: 0
   m_Smoothness: 0
   m_NormalScale: 1
   m_DiffuseRemapMin: {x: 0, y: 0, z: 0, w: 0}
