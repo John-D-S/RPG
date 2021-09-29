@@ -50,7 +50,7 @@ Material:
     - _SurfaceHighlight: 0.05
     - _SurfaceHightlighttiling: 0.25
     - _Surfacehightlightsize: 0
-    - _Tiling: 0.25
+    - _Tiling: 0.1
     - _Transparency: 0.5
     - _Wavesspeed: 0.75
     - _Wavesstrength: 0.207
