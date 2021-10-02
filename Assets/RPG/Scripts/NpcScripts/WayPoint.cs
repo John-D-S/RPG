@@ -9,7 +9,6 @@ public class WayPoint : MonoBehaviour
 
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireSphere(transform.position, 0.1f);
+        Gizmos.DrawIcon(transform.position, "waypoint.jpg", true);
     }
 }

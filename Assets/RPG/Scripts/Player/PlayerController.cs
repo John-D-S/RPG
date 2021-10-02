@@ -13,6 +13,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Tooltip("how fast the character runs in Meters/second")] private float runningforce;
     [SerializeField] private int maxJumps = 2;
     [SerializeField, Tooltip("")] private float jumpForce;
+    [SerializeField] private float maxDashCooldown;
     [SerializeField, Tooltip("")] private float dashForce;
     [SerializeField] private float turnLerpSpeed;
 
