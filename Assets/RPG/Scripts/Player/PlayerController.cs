@@ -185,12 +185,16 @@ public class PlayerController : MonoBehaviour
                 //clamp the camera rotation to be less than the max and greater than the min
                 currentCameraXRotation = Mathf.Clamp(currentCameraXRotation, -maxVerticalCameraAngle, maxVerticalCameraAngle);
                 //set the position and rotation of the camera according to the current camera rotation variables.
-                /*RaycastHit hit = new RaycastHit();
-                if(Physics.Raycast(gameObject.transform.position + Quaternion.Euler()))
+                RaycastHit hit = new RaycastHit();
+                Ray ray = new Ray(gameObject.transform.position + cameraLookPosition, Quaternion.Euler(-currentCameraXRotation, currentCameraYRotation, 0) * Vector3.back);
+                if(Physics.SphereCast(ray, 0.25f, out hit, cameraOffset.magnitude))
                 {
-                    
-                }*/
-                cameraGameObject.transform.position = gameObject.transform.position + Quaternion.Euler(-currentCameraXRotation, currentCameraYRotation, 0) * cameraOffset;
+                    cameraGameObject.transform.position = hit.point + hit.normal * 0.25f;
+                }
+                else
+                {
+                    cameraGameObject.transform.position = gameObject.transform.position + cameraLookPosition + Quaternion.Euler(-currentCameraXRotation, currentCameraYRotation, 0) * cameraOffset;
+                }
                 cameraGameObject.transform.LookAt(transform.position + cameraLookPosition);
             }
             else
