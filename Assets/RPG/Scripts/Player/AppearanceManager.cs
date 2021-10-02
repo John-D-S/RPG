@@ -27,6 +27,8 @@ public class AppearanceManager : MonoBehaviour
     [SerializeField] private List<GameObject> shoes;
     public int NumberOfShoes => shoes.Count;
 
+    private List<GameObject> selectedAppearance = new List<GameObject>();
+    
     public void ApplyAppearenceData(AppearanceData _data)
     {
         ChangeAppearance(ApperancePart.Hair, _data.characterHair);
@@ -35,9 +37,66 @@ public class AppearanceManager : MonoBehaviour
         ChangeAppearance(ApperancePart.Glove, _data.characterGloves);
         ChangeAppearance(ApperancePart.Shoe, _data.characterShoes);
     }
+
+    public void SetVisibility(bool _visibility)
+    {
+        foreach(GameObject go in selectedAppearance)
+        {
+            go.SetActive(_visibility);
+        }
+    }
+
+    private void RemovePartFromSelectedAppearance(ApperancePart _part)
+    {
+        foreach(GameObject go in selectedAppearance)
+        {
+            switch(_part)
+            {
+                case ApperancePart.Hair:
+                    if(hairs.Contains(go))
+                    {
+                        selectedAppearance.Remove(go);
+                        return;
+                    }
+                    break;
+                case ApperancePart.Head:
+                    if(heads.Contains(go))
+                    {
+                        selectedAppearance.Remove(go);
+                        return;
+                    }
+                    break;
+                case ApperancePart.Clothes:
+                    if(clothes.Contains(go))
+                    {
+                        selectedAppearance.Remove(go);
+                        return;
+                    }
+                    break;
+                case ApperancePart.Glove:
+                    if(gloves.Contains(go))
+                    {
+                        selectedAppearance.Remove(go);
+                        return;
+                    }
+                    break;
+                case ApperancePart.Shoe:
+                    if(shoes.Contains(go))
+                    {
+                        selectedAppearance.Remove(go);
+                        return;
+                    }
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(_part), _part, null);
+            }
+        }
+    }
     
     public void ChangeAppearance(ApperancePart _part, int index)
-    {
+    {   
+        RemovePartFromSelectedAppearance(_part);
+        
         List<GameObject> objectList;
         switch(_part)
         {
@@ -63,6 +122,7 @@ public class AppearanceManager : MonoBehaviour
         {
             go.SetActive(false);
         }
+        selectedAppearance.Add(objectList[index % objectList.Count]);
         objectList[index % objectList.Count].SetActive(true);
     }
 }

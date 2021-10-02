@@ -1,138 +1,197 @@
+using Saving;
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(CharacterController))]
+[RequireComponent(typeof(Rigidbody), typeof(AppearanceManager))]
 public class PlayerController : MonoBehaviour
 {
-    [Header("-- Position Settings --")] 
-    [SerializeField] private float minYPos = -100;
-    
-    [Header("-- Movement Settings --")]
-    [SerializeField] private float jumpSpeed;
-    [SerializeField] private float movementForce;
-    [SerializeField] private float maxGroundSpeed;
-    
-    [Header("-- Camera Settings --")]
+    [Header("-- Movement Settings --")] 
+    [SerializeField, Tooltip("how fast the character walks in meters/second")] private float walkingSpeed;
+    [SerializeField, Tooltip("how fast the character runs in Meters/second")] private float runningforce;
+    [SerializeField] private int maxJumps = 2;
+    [SerializeField, Tooltip("")] private float jumpForce;
+    [SerializeField, Tooltip("")] private float dashForce;
+    [SerializeField] private float turnLerpSpeed;
+
+    [Header("-- Camera Settings --")] 
+    [SerializeField] private Vector3 firstPersonOffset = new Vector3(0, 1.5f, 0);
+    [SerializeField] private bool thirdPerson;
     [SerializeField, Tooltip("The camera that rotates around the player")] private GameObject cameraGameObject;
     [SerializeField, Tooltip("The maximum angle the camera can look up or down.")] private float maxVerticalCameraAngle = 85;
     [SerializeField, Tooltip("What should be the camera's position in relation to the player.")] private Vector3 cameraOffset = Vector3.back * 10;
     [SerializeField, Tooltip("what position in relation to the player should the camera be looking at.")] private Vector3 cameraLookPosition = Vector3.up;
 
-    [Header("-- Animation Settings --")]
-    [SerializeField] private Animator animator;
-    private Vector3 currentVelocity;
-    private Vector3 controlForce;
-    private bool hasJumped = false;
-    //The current x and y rotation of the camera
+    private AppearanceManager appearanceManager;
+    private Rigidbody rigidBody;
+    private float movementVelocity;
+    private Vector3 movementDireciton;
+    private bool dashThisFrame;
+    private bool jumpThisFrame;
+    
     private float currentCameraXRotation = 0;
     private float currentCameraYRotation = 0;
-    private Quaternion targetRotation = Quaternion.identity;
 
-    private Vector3 initialPosition;
-    
-    private CharacterController characterController;
-    private void Start()
-    {
-        characterController = GetComponent<CharacterController>();
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
-        initialPosition = transform.position;
-    }
+    private Vector3 lastFramePosition;
+    private Vector3 jumpVelocity = Vector3.zero;
+    private Vector3 characterVelocity = Vector3.zero;
 
-    /// <summary>
-    /// simulate physics and apply the player's control stuff
-    /// </summary>
-    private void UpdateVelocity()
+    //
+    private int jumpsLeft;
+    private bool jumpHeldDown;
+    private float touchingGround = 0;
+    private Vector3 groundNormal;
+
+    private float dashCooldown;
+    private float timeSinceLeftGround;
+    private float timeSinceJump;
+
+    //reset the doublejump when making contact with an object
+    private void OnCollisionEnter(Collision collision)
     {
-        hasJumped = false;
-        currentVelocity = characterController.velocity + Physics.gravity * Time.fixedDeltaTime;
-        currentVelocity += controlForce;
-        if(characterController.isGrounded)
+        if (jumpsLeft != maxJumps)
         {
-            currentVelocity -= characterController.velocity * (characterController.velocity.magnitude / maxGroundSpeed);
-            Debug.Log(currentVelocity.magnitude);
-            if(currentVelocity.magnitude < 1.75f)
+            //for each contact point in the collision
+            for (int i = 0; i < collision.contactCount; i++)
             {
-                currentVelocity -= 0.5f * currentVelocity;
+                if (collision.GetContact(i).normal.y >= -0.1)
+                {
+                    jumpsLeft = maxJumps;
+                }
             }
         }
     }
-    
-    private void FixedUpdate()
+
+    private void OnCollisionStay(Collision collision)
     {
-        //if the player falls down past minYpos, reset its position
-        if(transform.position.y < minYPos)
+        touchingGround = 1;
+        timeSinceLeftGround = 0;
+
+        //get the average normal of all contact points
+        Vector3 contactNormalSum = new Vector3(0, 0, 0);
+        int noOfContacts = collision.contactCount;
+        for (int i = 0; i < noOfContacts; i++)
         {
-            transform.position = initialPosition;
-            
-            currentVelocity = Vector3.zero;
+            contactNormalSum += collision.GetContact(i).normal;
+        }
+        groundNormal = contactNormalSum / noOfContacts;
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        touchingGround = 0;
+        groundNormal = Vector3.up;
+    }
+    
+    
+    void FixedUpdate()
+    {
+        if (jumpThisFrame && jumpsLeft > 0)
+        {
+            if (timeSinceLeftGround < 0.25f && jumpsLeft == maxJumps)
+            {
+                rigidBody.AddForce(groundNormal.normalized * jumpForce, ForceMode.Impulse);
+            }
+            if (jumpsLeft == 1)
+            {
+                rigidBody.velocity = new Vector3(rigidBody.velocity.x, rigidBody.velocity.y * 0.5f, rigidBody.velocity.z);
+            }
+            rigidBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            jumpsLeft -= 1;
+        }
+        if (timeSinceLeftGround < 0.3)
+        {
+            timeSinceLeftGround += Time.fixedDeltaTime;
+        }
+
+        if (dashCooldown > 0)
+        {
+            dashCooldown -= Time.fixedDeltaTime;
+        }
+        if (dashThisFrame && dashCooldown <= 0)
+        {
+            rigidBody.AddForce(cameraGameObject.transform.rotation * (dashForce * Vector3.forward), ForceMode.Impulse);
+            dashCooldown = 1f;
+        }
+        jumpThisFrame = false;
+        dashThisFrame = false;
+
+        //sprinting is always on when touching the ground
+        float forceToAdd = (touchingGround * movementVelocity);
+
+        Vector3 force = movementDireciton * forceToAdd;
+
+        Vector3 travellingDir = rigidBody.velocity;
+        float dumbFriction = touchingGround * ( travellingDir.magnitude);
+        Vector3 dumbFrictionDir = new Vector3(-travellingDir.x, 0, -travellingDir.z).normalized;
+        Vector3 dumbFrictionForce = dumbFriction * dumbFrictionDir;
+
+        rigidBody.AddForce(dumbFrictionForce);
+        rigidBody.AddForce(force);
+    }
+    
+    private void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.C))
+        {
+            thirdPerson = !thirdPerson;
+            appearanceManager.SetVisibility(thirdPerson);
+        }
+        if(Input.GetMouseButtonDown(0))
+        {
+            dashThisFrame = true;
+        }
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            jumpThisFrame = true;
+        }
+        
+        movementDireciton = Quaternion.Euler(0, cameraGameObject.transform.eulerAngles.y, 0) * new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
+        transform.LookAt(Vector3.Lerp(transform.position + transform.forward, transform.position + movementDireciton, turnLerpSpeed * Time.deltaTime), Vector3.up);
+        bool isSprinting = Input.GetKey(KeyCode.LeftShift);
+        if(Mathf.Abs(Input.GetAxisRaw("Horizontal")) + Mathf.Abs(Input.GetAxisRaw("Vertical")) > 0.1f)
+        {
+            movementVelocity = isSprinting ? runningforce : walkingSpeed;
         }
         else
         {
-            //lerp the rotation to match the camera's rotation
-            transform.rotation = Quaternion.Lerp(transform.rotation, targetRotation, 0.1f);
-            //update the character's velocity, then apply it by using simpleMove
-            UpdateVelocity();
-            characterController.SimpleMove(currentVelocity);
-            //set HasJumped to false.
-            hasJumped = false;
+            movementVelocity = 0;
         }
-    }
-
-    private void Update()
-    {
-        //if the character controller is grounded, the player can control it.
-        if(characterController.isGrounded)
+        
+        if(cameraGameObject)
         {
-            //allow the animator to use the grounded animaitons again
-            animator.SetBool("Airborne", false);
-            bool isRunning = false;
-            //rotate the camera to match the 
-            targetRotation = Quaternion.Euler(0, cameraGameObject.transform.rotation.eulerAngles.y,0);
-            controlForce = targetRotation * new Vector3(0, 0, Input.GetAxisRaw("Vertical")).normalized * (movementForce * Time.fixedDeltaTime);
-            if(Input.GetAxisRaw("Fire3") > 0.1f)
+            if(thirdPerson)
             {
-                controlForce *= 2;
-                isRunning = true;
-            }
-
-            if(controlForce.magnitude > 0.1f)
-            {
-                if(isRunning)
-                {
-                    animator.SetInteger("MoveSpeed", 2);
-                }
-                else
-                {
-                    animator.SetInteger("MoveSpeed", 1);
-                }
+                currentCameraXRotation += Input.GetAxisRaw("Mouse Y");
+                currentCameraYRotation += Input.GetAxisRaw("Mouse X");
+                //clamp the camera rotation to be less than the max and greater than the min
+                currentCameraXRotation = Mathf.Clamp(currentCameraXRotation, -maxVerticalCameraAngle, maxVerticalCameraAngle);
+                //set the position and rotation of the camera according to the current camera rotation variables.
+                cameraGameObject.transform.position = gameObject.transform.position + Quaternion.Euler(-currentCameraXRotation, currentCameraYRotation, 0) * cameraOffset;
+                cameraGameObject.transform.LookAt(transform.position + cameraLookPosition);
             }
             else
             {
-                animator.SetInteger("MoveSpeed", 0);
+                currentCameraXRotation -= Input.GetAxisRaw("Mouse Y");
+                currentCameraYRotation += Input.GetAxisRaw("Mouse X");
+                //clamp the camera rotation to be less than the max and greater than the min
+                currentCameraXRotation = Mathf.Clamp(currentCameraXRotation, -maxVerticalCameraAngle, maxVerticalCameraAngle);
+                //set the position and rotation of the camera according to the current camera rotation variables.
+                cameraGameObject.transform.rotation = Quaternion.Euler(currentCameraXRotation, currentCameraYRotation, 0);
+                Vector3 cameraPosition = Vector3.Lerp(cameraGameObject.transform.position, gameObject.transform.position + firstPersonOffset, 0.25f);
+                cameraGameObject.transform.position = cameraPosition;
             }
-            
-            if(Input.GetAxisRaw("Jump") > 0.1f || hasJumped)
-            {
-                controlForce = controlForce + Vector3.up * jumpSpeed;
-                hasJumped = true;
-            }
         }
-        else
-        {
-            animator.SetBool("Airborne", true);
-        }
-        if(cameraGameObject)
-        {
-            currentCameraXRotation += Input.GetAxisRaw("Mouse Y");
-            currentCameraYRotation += Input.GetAxisRaw("Mouse X");
-            //clamp the camera rotation to be less than the max and greater than the min
-            currentCameraXRotation = Mathf.Clamp(currentCameraXRotation, -maxVerticalCameraAngle, maxVerticalCameraAngle);
-            //set the position and rotation of the camera according to the current camera rotation variables.
-            cameraGameObject.transform.position = gameObject.transform.position + Quaternion.Euler(-currentCameraXRotation, currentCameraYRotation, 0) * cameraOffset;
-            cameraGameObject.transform.LookAt(transform.position + cameraLookPosition);
-        }
+    }
+
+    private void Start()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+        appearanceManager = GetComponent<AppearanceManager>();
+        rigidBody = GetComponent<Rigidbody>();
+        lastFramePosition = transform.position;
     }
 }
