@@ -24,6 +24,10 @@ public class PlayerController : MonoBehaviour
     [SerializeField, Tooltip("What should be the camera's position in relation to the player.")] private Vector3 cameraOffset = Vector3.back * 10;
     [SerializeField, Tooltip("what position in relation to the player should the camera be looking at.")] private Vector3 cameraLookPosition = Vector3.up;
 
+    [Header("-- Animation Settings --")]
+    [SerializeField] private Animator animator;
+    [SerializeField] private float sprintSpeed;
+    
     private AppearanceManager appearanceManager;
     private Rigidbody rigidBody;
     private float movementVelocity;
@@ -98,13 +102,21 @@ public class PlayerController : MonoBehaviour
             {
                 rigidBody.velocity = new Vector3(rigidBody.velocity.x, rigidBody.velocity.y * 0.5f, rigidBody.velocity.z);
             }
+            animator.SetTrigger("Jump");
             rigidBody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
             jumpsLeft -= 1;
+            timeSinceJump = 0;
         }
-        if (timeSinceLeftGround < 0.3)
+        if (timeSinceLeftGround < 10)
         {
             timeSinceLeftGround += Time.fixedDeltaTime;
         }
+
+        if(timeSinceJump < 10)
+        {
+            timeSinceJump += Time.fixedDeltaTime;
+        }
+        
 
         if (dashCooldown > 0)
         {
@@ -112,6 +124,7 @@ public class PlayerController : MonoBehaviour
         }
         if (dashThisFrame && dashCooldown <= 0)
         {
+            animator.SetTrigger("Dash");
             rigidBody.AddForce(cameraGameObject.transform.rotation * (dashForce * Vector3.forward), ForceMode.Impulse);
             dashCooldown = 1f;
         }
@@ -130,6 +143,9 @@ public class PlayerController : MonoBehaviour
 
         rigidBody.AddForce(dumbFrictionForce);
         rigidBody.AddForce(force);
+        
+        animator.SetFloat("MovementSpeed", rigidBody.velocity.magnitude / sprintSpeed);
+        animator.SetBool("Airborne", timeSinceLeftGround > 0.75f || (timeSinceJump < 0.8f && timeSinceLeftGround > 0.01f));
     }
     
     private void Update()
@@ -149,7 +165,7 @@ public class PlayerController : MonoBehaviour
         }
         
         movementDireciton = Quaternion.Euler(0, cameraGameObject.transform.eulerAngles.y, 0) * new Vector3(Input.GetAxisRaw("Horizontal"), 0, Input.GetAxisRaw("Vertical")).normalized;
-        transform.LookAt(Vector3.Lerp(transform.position + transform.forward, transform.position + movementDireciton, turnLerpSpeed * Time.deltaTime), Vector3.up);
+        transform.LookAt(Vector3.Lerp(transform.position + transform.forward, transform.position + new Vector3(rigidBody.velocity.x, 0, rigidBody.velocity.z), turnLerpSpeed * Time.deltaTime), Vector3.up);
         bool isSprinting = Input.GetKey(KeyCode.LeftShift);
         if(Mathf.Abs(Input.GetAxisRaw("Horizontal")) + Mathf.Abs(Input.GetAxisRaw("Vertical")) > 0.1f)
         {
@@ -169,6 +185,11 @@ public class PlayerController : MonoBehaviour
                 //clamp the camera rotation to be less than the max and greater than the min
                 currentCameraXRotation = Mathf.Clamp(currentCameraXRotation, -maxVerticalCameraAngle, maxVerticalCameraAngle);
                 //set the position and rotation of the camera according to the current camera rotation variables.
+                /*RaycastHit hit = new RaycastHit();
+                if(Physics.Raycast(gameObject.transform.position + Quaternion.Euler()))
+                {
+                    
+                }*/
                 cameraGameObject.transform.position = gameObject.transform.position + Quaternion.Euler(-currentCameraXRotation, currentCameraYRotation, 0) * cameraOffset;
                 cameraGameObject.transform.LookAt(transform.position + cameraLookPosition);
             }
