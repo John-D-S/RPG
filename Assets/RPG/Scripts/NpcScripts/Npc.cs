@@ -37,7 +37,13 @@ public class Npc : MonoBehaviour
     //will give us a random waypoint in the array as a variable every time i access it
     private WayPoint RandomPoint => waypoints[Random.Range(0, waypoints.Count)];
 
+    
     private void OnValidate()
+    {
+        UnityEditor.EditorApplication.delayCall += _OnValidate;
+    }
+
+    private void _OnValidate()
     {
         if(appearanceManager)
         {
@@ -71,7 +77,6 @@ public class Npc : MonoBehaviour
                     animator.SetInteger("Movement", 1);
                     if(Random.Range(0, 2) == 1)
                     {
-                        Debug.Log("shouldBeRunning");
                         animator.SetInteger("Movement", 2);
                         isRunning = true;
                     }

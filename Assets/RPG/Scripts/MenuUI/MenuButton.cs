@@ -66,7 +66,7 @@ namespace Menu
         private void Start()
         {
             //set the menu handler
-            menuHandler = TheMenuHandler.theMenuHandler;
+            menuHandler = MenuHandler.theMenuHandler;
             //set the onclick listener
             button.onClick.AddListener(PerformFunction);
         }

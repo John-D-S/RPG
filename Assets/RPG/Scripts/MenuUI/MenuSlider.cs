@@ -41,7 +41,7 @@ namespace Menu
         private void Start()
         {
             //set the menu handler
-            menuHandler = TheMenuHandler.theMenuHandler;
+            menuHandler = MenuHandler.theMenuHandler;
             //set the onvaluchanged listener
             slider.onValueChanged.AddListener(PerformFunction);
             //set the initial slider position to its respective position according to playerprefs

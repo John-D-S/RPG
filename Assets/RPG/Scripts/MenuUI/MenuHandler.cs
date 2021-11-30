@@ -9,14 +9,6 @@ using UnityEngine.Audio;
 
 namespace Menu
 {
-    /// <summary>
-    /// holds the Static menuHandler
-    /// </summary>
-    public static class TheMenuHandler
-    {
-        public static MenuHandler theMenuHandler;
-    }
-
     public class MenuHandler : MonoBehaviour
     {
         [Header("-- Scene Name Variables --")]
@@ -33,6 +25,8 @@ namespace Menu
         [SerializeField, Tooltip("The pause/main menu")]
         private GameObject MenuPanel;
 
+        public static MenuHandler theMenuHandler;
+        
         #region Pausing
         private bool paused = false;
         public bool Paused
@@ -51,6 +45,8 @@ namespace Menu
             Time.timeScale = 0;
             if (MenuPanel)
                 MenuPanel.SetActive(true);
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
             paused = true;
         }
 
@@ -62,6 +58,8 @@ namespace Menu
             paused = false;
             if (MenuPanel)
                 MenuPanel.SetActive(false);
+            Cursor.visible = false;
+            Cursor.lockState = CursorLockMode.Locked;
             Time.timeScale = 1;
         }
         #endregion
@@ -168,9 +166,20 @@ namespace Menu
             }
         }
 
+        /// <summary>
+        /// straight up quits the game;
+        /// </summary>
+        public void QuitGame()
+        {
+            Application.Quit();
+        #if UNITY_EDITOR
+            UnityEditor.EditorApplication.isPlaying = false;
+        #endif
+        }
+
         private void Update()
         {
-            if(SceneManager.GetActiveScene().name == gameSceneName && Input.GetAxis("Cancel") > 0.5f)
+            if(SceneManager.GetActiveScene().name == gameSceneName && Input.GetKeyDown(KeyCode.Escape))
             {
                 if(paused)
                     Unpause();
@@ -186,7 +195,7 @@ namespace Menu
 
         private void Awake()
         {
-            TheMenuHandler.theMenuHandler = this;
+            theMenuHandler = this;
         }
     }
 }

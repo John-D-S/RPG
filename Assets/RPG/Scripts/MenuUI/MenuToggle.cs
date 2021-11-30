@@ -39,7 +39,7 @@ namespace Menu
         private void Start()
         {
             //Set the menu handler
-            menuHandler = TheMenuHandler.theMenuHandler;
+            menuHandler = MenuHandler.theMenuHandler;
 
             //set the current toggle from the playerSettings
             switch (toggleType)

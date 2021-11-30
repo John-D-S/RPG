@@ -1,3 +1,5 @@
+using Menu;
+
 using Saving;
 
 using System;
@@ -9,25 +11,24 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     [Header("-- Movement Settings --")] 
-    [SerializeField, Tooltip("how fast the character walks in meters/second")] private float walkingSpeed;
-    [SerializeField, Tooltip("how fast the character runs in Meters/second")] private float runningforce;
+    [SerializeField, Tooltip("how fast the character walks in meters/second")] private float walkingSpeed = 10;
+    [SerializeField, Tooltip("how fast the character runs in Meters/second")] private float runningforce = 20;
     [SerializeField] private int maxJumps = 2;
-    [SerializeField, Tooltip("")] private float jumpForce;
-    [SerializeField] private float maxDashCooldown;
-    [SerializeField, Tooltip("")] private float dashForce;
-    [SerializeField] private float turnLerpSpeed;
+    [SerializeField, Tooltip("")] private float jumpForce = 4;
+    [SerializeField, Tooltip("")] private float dashForce = 5;
+    [SerializeField] private float turnLerpSpeed = 10;
 
     [Header("-- Camera Settings --")] 
     [SerializeField] private Vector3 firstPersonOffset = new Vector3(0, 1.5f, 0);
-    [SerializeField] private bool thirdPerson;
+    [SerializeField] private bool thirdPerson = true;
     [SerializeField, Tooltip("The camera that rotates around the player")] private GameObject cameraGameObject;
-    [SerializeField, Tooltip("The maximum angle the camera can look up or down.")] private float maxVerticalCameraAngle = 85;
-    [SerializeField, Tooltip("What should be the camera's position in relation to the player.")] private Vector3 cameraOffset = Vector3.back * 10;
-    [SerializeField, Tooltip("what position in relation to the player should the camera be looking at.")] private Vector3 cameraLookPosition = Vector3.up;
+    [SerializeField, Tooltip("The maximum angle the camera can look up or down.")] private float maxVerticalCameraAngle = 45;
+    [SerializeField, Tooltip("What should be the camera's position in relation to the player.")] private Vector3 cameraOffset = new Vector3(0, 0, -6);
+    [SerializeField, Tooltip("what position in relation to the player should the camera be looking at.")] private Vector3 cameraLookPosition = new Vector3(0, 2, 0);
 
     [Header("-- Animation Settings --")]
     [SerializeField] private Animator animator;
-    [SerializeField] private float sprintSpeed;
+    [SerializeField] private float sprintSpeed = 15;
     
     private AppearanceManager appearanceManager;
     private Rigidbody rigidBody;
@@ -39,11 +40,6 @@ public class PlayerController : MonoBehaviour
     private float currentCameraXRotation = 0;
     private float currentCameraYRotation = 0;
 
-    private Vector3 lastFramePosition;
-    private Vector3 jumpVelocity = Vector3.zero;
-    private Vector3 characterVelocity = Vector3.zero;
-
-    //
     private int jumpsLeft;
     private bool jumpHeldDown;
     private float touchingGround = 0;
@@ -177,7 +173,7 @@ public class PlayerController : MonoBehaviour
             movementVelocity = 0;
         }
         
-        if(cameraGameObject)
+        if(cameraGameObject && !MenuHandler.theMenuHandler.Paused)
         {
             if(thirdPerson)
             {
@@ -218,6 +214,5 @@ public class PlayerController : MonoBehaviour
         Cursor.lockState = CursorLockMode.Locked;
         appearanceManager = GetComponent<AppearanceManager>();
         rigidBody = GetComponent<Rigidbody>();
-        lastFramePosition = transform.position;
     }
 }

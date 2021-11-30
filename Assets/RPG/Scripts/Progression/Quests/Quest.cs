@@ -1,22 +1,21 @@
 using System.Collections;
 using System.Collections.Generic;
+
+using UnityEditor;
+
 using UnityEngine;
 
-public class Quest
+public abstract class Quest
 {
     public string questName;
     public bool questCompleted;
-    
-    
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public abstract bool QuestCondition { get; set; }
+}
+
+public class FetchQuest : Quest
+{
+    public Progress.Item item;
+    public PlayerInventory inventory;
+    public override bool QuestCondition { get; set; }
 }
